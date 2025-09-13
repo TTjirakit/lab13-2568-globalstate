@@ -27,7 +27,7 @@ export default function Sidebar() {
             size={12}
             offset={7}
             position="bottom-end"
-            color="red"
+            color="green"
             withBorder
           >
             <Avatar size="md" radius="xl" src="/Profile.jpg" />
