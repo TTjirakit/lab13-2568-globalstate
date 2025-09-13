@@ -11,12 +11,12 @@ import {
   Text,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { useTaskFormStore } from "../store/TaskFormStore";
+import { useTaskFormStore } from "../store/TaskFromStore1";
 
 interface AddTaskModalProps {
   opened: boolean;
   onClose: () => void;
-  onAdd: (title: string, description: string, dueDate: string | null) => void;
+  onAdd: (title: string, description: string, dueDate: string | null, assignees: string[]) => void;
 }
 const usersData: Record<string, { image: string; email: string }> = {
   "Emily Johnson": {
@@ -46,6 +46,16 @@ const usersData: Record<string, { image: string; email: string }> = {
   },
 };
 
+const renderMultiSelectOption = ({ option }: { option: any }) => (
+  <Group gap="sm">
+    <Avatar src={option.image} radius="xl" size="sm" />
+    <div>
+      <Text fw={600}>{option.label}</Text>
+      <Text size="xs" c="dimmed">{option.email}</Text>
+    </div>
+  </Group>
+);
+
 export default function AddTaskModal({
   opened,
   onClose,
@@ -55,14 +65,16 @@ export default function AddTaskModal({
     title,
     description,
     dueDate,
-    setTitle,
+    assignees,
+    setTasks,
     setDescription,
     setDueDate,
     resetForm,
+    setAssignees,
   } = useTaskFormStore();
   const handleAdd = () => {
-    if (!title.trim() || !description.trim() || !dueDate) return;
-    onAdd(title, description, dueDate);
+    if (!title.trim() || !description.trim() || !dueDate || assignees.length === 0) return;
+    onAdd(title, description, dueDate, assignees);
     onClose();
     resetForm();
   };
@@ -74,7 +86,7 @@ export default function AddTaskModal({
           label="Title"
           withAsterisk
           value={title}
-          onChange={(e) => setTitle(e.currentTarget.value)}
+          onChange={(e) => setTasks(e.currentTarget.value)}
           error={!title.trim() && "Title is required"}
         />
         <Textarea
@@ -94,6 +106,22 @@ export default function AddTaskModal({
           error={!dueDate?.trim() ? "Due Date is required" : false}
         />
         {/* เพิ่ม MultiSelect ตรงนี้*/}
+        <MultiSelect
+          data={options}                 
+          value={assignees}
+          onChange={(values) => {
+          setAssignees(values);
+          setAssigneesError(values.length ? "" : "Assignees is required");
+        }}
+        renderOption={renderMultiSelectOption} 
+        hidePickedOptions                      
+        withCheckIcon={false}                  
+        comboboxProps={{ withinPortal: true }} 
+        label="Assignees"
+        placeholder="Search for Assignees"
+        searchable
+        error={assigneesError}
+        />
         <Button onClick={handleAdd}>Save</Button>
       </Stack>
     </Modal>
