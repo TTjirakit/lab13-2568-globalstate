@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useTaskFormStore } from "../store/TaskFromStore1";
+import { useState } from "react";
 
 interface AddTaskModalProps {
   opened: boolean;
@@ -46,16 +47,6 @@ const usersData: Record<string, { image: string; email: string }> = {
   },
 };
 
-const renderMultiSelectOption = ({ option }: { option: any }) => (
-  <Group gap="sm">
-    <Avatar src={option.image} radius="xl" size="sm" />
-    <div>
-      <Text fw={600}>{option.label}</Text>
-      <Text size="xs" c="dimmed">{option.email}</Text>
-    </div>
-  </Group>
-);
-
 export default function AddTaskModal({
   opened,
   onClose,
@@ -78,6 +69,26 @@ export default function AddTaskModal({
     onClose();
     resetForm();
   };
+
+
+  const options = Object.entries(usersData).map(([name, u]) => ({
+  value: name,
+  label: name,
+  email: u.email,
+  image: u.image,
+}));
+
+const renderOption = ({ option } : any) => (
+  <Group gap="sm">
+    <Avatar src={usersData[option.value].image} size={36} radius="xl" />
+    <div>
+      <Text size="sm">{option.value}</Text>
+      <Text size="xs" opacity={0.5}>
+        {usersData[option.value].email}
+      </Text>
+    </div>
+  </Group>
+);
 
   return (
     <Modal opened={opened} onClose={onClose} title="Add Task">
@@ -105,23 +116,20 @@ export default function AddTaskModal({
           onChange={(date) => setDueDate(date ? date : null)}
           error={!dueDate?.trim() ? "Due Date is required" : false}
         />
+
         {/* เพิ่ม MultiSelect ตรงนี้*/}
-        <MultiSelect
-          data={options}                 
+       <MultiSelect
+          data={options}
           value={assignees}
-          onChange={(values) => {
-          setAssignees(values);
-          setAssigneesError(values.length ? "" : "Assignees is required");
-        }}
-        renderOption={renderMultiSelectOption} 
-        hidePickedOptions                      
-        withCheckIcon={false}                  
-        comboboxProps={{ withinPortal: true }} 
-        label="Assignees"
-        placeholder="Search for Assignees"
-        searchable
-        error={assigneesError}
-        />
+          onChange={setAssignees}
+          label="Assignees"
+          placeholder="Search for Assignees"
+          searchable
+          hidePickedOptions        
+          withCheckIcon={false}   
+          renderOption={renderOption}
+          error={assignees.length === 0 ? "Assignees is required" : undefined}
+/>
         <Button onClick={handleAdd}>Save</Button>
       </Stack>
     </Modal>
