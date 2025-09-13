@@ -39,3 +39,11 @@ export const useTaskStore = create<TaskItemProps>((set) => ({
       tasks: state.tasks.filter((task) => task.id !== id),
     })),
 }));
+
+if (typeof window !== "undefined") {
+  useTaskStore.subscribe((state) => {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify(state.tasks));
+    } catch {}
+  });
+}
