@@ -5,14 +5,14 @@ import {
   Textarea,
   Button,
   MultiSelect,
-  type MultiSelectProps,
+  // type MultiSelectProps,
   Avatar,
   Group,
   Text,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { useTaskFormStore } from "../store/TaskFromStore1";
-import { useState } from "react";
+
 
 interface AddTaskModalProps {
   opened: boolean;
